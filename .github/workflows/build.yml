@@ -1,27 +1,49 @@
 name: Build patched wlroots
+
 on:
-  workflow_dispatch:
+
+workflow_dispatch:
+
 jobs:
-  build:
-    runs-on: ubuntu-24.04-arm
-    container: debian:trixie
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build patched libwlroots
-        run: |
-          export DEBIAN_FRONTEND=noninteractive
-          sed -i 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/debian.sources
-          apt-get update
-          apt-get install -y dpkg-dev devscripts
-          apt-get build-dep -y wlroots
-          mkdir -p /build && cd /build
-          apt-get source wlroots
-          cp "$GITHUB_WORKSPACE/atomic.c" /build/wlroots-*/backend/drm/atomic.c
-          cd /build/wlroots-*/
-          DEB_BUILD_OPTIONS="nocheck parallel=4" dpkg-buildpackage -b -uc -us -d
-          mkdir -p "$GITHUB_WORKSPACE/out"
-          cp /build/*.deb "$GITHUB_WORKSPACE/out/"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: wlroots-debs
-          path: out/*.deb
+
+build:
+
+runs-on: ubuntu-24.04-arm
+
+container: debian:trixie
+
+steps:
+
+uses: actions/checkout@v4
+
+name: Build patched libwlroots
+
+run:
+
+export DEBIAN_FRONTEND=noninteractive
+
+sed -i 's/^Types: deb$/Types: deb deb-src/'
+
+apt-get update
+
+apt-get install -y dpkg-dev devscripts apt-get build-dep -y wlroots
+
+mkdir -p /build && cd /build
+
+apt-get source wlroots
+
+cp "$GITHUB_WORKSPACE/atomic.c" /build/wlroo
+
+cp "$GITHUB_WORKSPACE/drm.c" /build/wlroots-
+
+cd /build/wlroots-*/
+
+DEB_BUILD_OPTIONS="nocheck parallel=4" dpkg-E mkdir -p "$GITHUB_WORKSPACE/out"
+
+cp /build/*.deb "$GITHUB_WORKSPACE/out/"
+
+uses: actions/upload-artifact@v4
+
+with:
+
+name: wlroots-debs path: out/*.deb
